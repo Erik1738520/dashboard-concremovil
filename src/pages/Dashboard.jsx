@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   RefreshCw, DollarSign, TrendingUp, Package,
   Receipt, Users, BarChart2, UserPlus, Loader,
-  TrendingDown, Minus, Tag, SlidersHorizontal, X,
+  TrendingDown, Minus, Layers, SlidersHorizontal, X,
 } from 'lucide-react';
 
 import Header from '../components/Header';
@@ -214,7 +214,17 @@ export default function Dashboard() {
   const unidadesPrev   = totalUnidades(ventasAnterior);
   const varUnidades    = variacionPct(unidadesActual, unidadesPrev);
 
-  const desglose  = useMemo(() => desglosePorUnidad(ventasFiltradas), [ventasFiltradas]);
+  const desglose        = useMemo(() => desglosePorUnidad(ventasFiltradas), [ventasFiltradas]);
+  const desglosePrev    = useMemo(() => desglosePorUnidad(ventasAnterior),  [ventasAnterior]);
+  const desgloseVolPrev = useMemo(
+    () => mesSel ? desglosePorUnidad(ventasMesPrev) : desglosePrev,
+    [mesSel, ventasMesPrev, desglosePrev]
+  );
+  const varVolumen = useMemo(() => {
+    const prev = mesSel ? totalUnidades(ventasMesPrev) : unidadesPrev;
+    return variacionPct(unidadesActual, prev);
+  }, [mesSel, ventasMesPrev, unidadesPrev, unidadesActual]);
+
   const ticket    = ticketPromedio(ventasFiltradas);
   const ventaProm = ventaPromedioPorCliente(ventasFiltradas);
   const promCli   = promedioClientesPorMes(ventasFiltradas);
@@ -254,6 +264,16 @@ export default function Dashboard() {
     : mesSel
       ? `${MESES_CORTO[Number(mesSel) - 1]} ${Number(anioSel) - 1}`
       : String(Number(anioSel) - 1);
+
+  const subtituloVolumen = useMemo(() => {
+    if (desglose.length === 0) return 'Sin datos en el período';
+    const topUnidad = desglose[0].unidad;
+    const prevCant  = desgloseVolPrev.find(d => d.unidad === topUnidad)?.cantidad ?? 0;
+    const partes    = [`vs ${formatoNumero(prevCant)} ${topUnidad} (${etiquetaCrecimComp})`];
+    if (desglose.length > 1)
+      partes.push(...desglose.slice(1).map(d => `${formatoNumero(d.cantidad)} ${d.unidad}`));
+    return partes.join(' · ');
+  }, [desglose, desgloseVolPrev, etiquetaCrecimComp]);
 
   /* ── Render ──────────────────────────────────────────── */
   if (cargando && ventas.length === 0) return <LoadingScreen />;
@@ -421,17 +441,35 @@ export default function Dashboard() {
               : 'Sin datos en el período'}
             icono={<Package className="w-5 h-5" />}
             colorIcono="blue"
+            secundario={prodMasVendido
+              ? <p className="text-xs text-slate-500"><span className="font-semibold text-gray-800">{formatoMoneda(prodMasVendido.precioPorUnidad)}</span> promedio / m3</p>
+              : null}
           />
 
-          {/* 8. Precio promedio por m3 del top producto */}
+          {/* 8. Volumen vendido por unidad */}
           <KPICard
-            titulo={`PRECIO / M3 — ${etiqueta}`}
-            valor={prodMasVendido ? formatoMoneda(prodMasVendido.precioPorUnidad) : '—'}
-            subtitulo={prodMasVendido
-              ? `Promedio por m3 de ${prodMasVendido.cve_prod}`
-              : 'Sin datos en el período'}
-            icono={<Tag className="w-5 h-5" />}
-            colorIcono="blue"
+            titulo={`VOL. VENDIDO — ${etiqueta}`}
+            valor={desglose.length > 0
+              ? `${formatoNumero(desglose[0].cantidad)} ${desglose[0].unidad}`
+              : '—'}
+            subtitulo={subtituloVolumen}
+            variacion={varVolumen}
+            icono={<Layers className="w-5 h-5" />}
+            colorIcono="emerald"
+            secundario={mesSel && desglose.length > 0
+              ? <p className="text-xs text-slate-500">
+                  vs{' '}
+                  <span className="font-semibold text-gray-800">
+                    {formatoNumero(desglosePrev.find(d => d.unidad === desglose[0].unidad)?.cantidad ?? 0)} {desglose[0].unidad}
+                  </span>
+                  {' '}({periodoAnt})
+                  {varUnidades !== null && (
+                    <span className={`ml-1.5 font-medium ${varUnidades >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                      {varUnidades > 0 ? '+' : ''}{varUnidades.toFixed(1)}%
+                    </span>
+                  )}
+                </p>
+              : null}
           />
         </div>
 
