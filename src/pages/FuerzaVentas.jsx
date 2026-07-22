@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, CartesianGrid, ReferenceLine,
@@ -6,7 +8,7 @@ import {
 import {
   TrendingUp, Users, UserPlus, MapPin, Fuel,
   Star, Receipt, Package, SlidersHorizontal, X, ChevronRight,
-  Phone, Loader, Trophy,
+  Phone, Loader, Trophy, FileDown, FileSpreadsheet,
 } from 'lucide-react';
 
 import Header from '../components/Header';
@@ -107,6 +109,7 @@ export default function FuerzaVentas() {
   const [eoxData,    setEoxData]    = useState([]);
   const [visitasAll, setVisitasAll] = useState([]);
   const [cargandoExtra, setCargandoExtra] = useState(true);
+  const tablaRef = useRef(null);
 
   useEffect(() => {
     Promise.all([fetchVisitas(), fetchEOX()])
@@ -296,6 +299,40 @@ export default function FuerzaVentas() {
   }, [sel, ventas, anioSel]);
 
   /* ── Selector estilo select ── */
+  function descargarExcel() {
+    const periodo = [anioSel, mesSel ? MESES[Number(mesSel)-1] : ''].filter(Boolean).join(' ') || 'Histórico';
+    const headers = ['Período','#','Agente','Grupo','Ventas ($)','% Total','m³','Clientes','Cli. Nuevos','Facturas','Ticket Prom. ($)','Visitas','Llamadas','Gasolina ($)'];
+    const filas = agentesMetricas.map((a, i) => [
+      periodo, i + 1, a.nombre, a.grupo || '', a.totalVentas.toFixed(0), `${a.pctTotal.toFixed(1)}%`,
+      a.totalM3.toFixed(1), a.numClientes, a.numNuevos, a.numFacturas,
+      a.ticketProm.toFixed(0), a.nVisitas, a.nLlamadas, a.gasPesos.toFixed(0),
+    ]);
+    const csv = [headers, ...filas]
+      .map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `rendimiento-equipo-${periodo}.csv`; link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function descargarPDF() {
+    const el = tablaRef.current;
+    if (!el) return;
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+    const img    = canvas.toDataURL('image/png');
+    const pdf    = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
+    const pw     = pdf.internal.pageSize.getWidth()  - 20;
+    const ph     = pdf.internal.pageSize.getHeight() - 20;
+    const ratio  = canvas.width / canvas.height;
+    const ih     = Math.min(ph, pw / ratio);
+    const iw     = ih * ratio;
+    const periodo = [anioSel, mesSel ? MESES[Number(mesSel)-1] : ''].filter(Boolean).join(' ') || 'Histórico';
+    pdf.addImage(img, 'PNG', 10, 10, iw, ih);
+    pdf.save(`rendimiento-equipo-${periodo}.pdf`);
+  }
+
   const selectCls = "appearance-none bg-white border border-gray-200 rounded-lg px-3 py-1.5 pr-8 text-sm text-slate-700 font-medium cursor-pointer hover:border-gray-300 focus:outline-none transition-colors";
   const arrow = { backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat:'no-repeat', backgroundPosition:'right 10px center' };
 
@@ -661,10 +698,20 @@ export default function FuerzaVentas() {
         )}
 
         {/* ── Tabla ranking completa — oculta en modo personal ── */}
-        {!modoPersonal && <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        {!modoPersonal && <div ref={tablaRef} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-900">Rendimiento Completo del Equipo</h3>
-            <span className="text-xs text-slate-400">{agentesMetricas.length} agentes</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400">{agentesMetricas.length} agentes</span>
+              <button onClick={descargarExcel}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors">
+                <FileSpreadsheet className="w-3.5 h-3.5" /> Excel
+              </button>
+              <button onClick={descargarPDF}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors">
+                <FileDown className="w-3.5 h-3.5" /> PDF
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
