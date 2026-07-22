@@ -105,10 +105,10 @@ export function AuthProvider({ children }) {
   };
 
   const PERMISOS = {
-    Administrador:    ['dashboard', 'fuerza-ventas', 'agentes', 'productos', 'usuarios', 'visitas'],
-    Dirección:        ['dashboard', 'fuerza-ventas', 'visitas', 'productos'],
-    'Gerente ventas': ['dashboard', 'fuerza-ventas', 'visitas'],
-    Ventas:           ['fuerza-ventas', 'visitas'],
+    Administrador:    ['dashboard', 'fuerza-ventas', 'agentes', 'productos', 'usuarios', 'visitas', 'otras-aplicaciones'],
+    Dirección:        ['dashboard', 'fuerza-ventas', 'visitas', 'productos', 'otras-aplicaciones'],
+    'Gerente ventas': ['dashboard', 'fuerza-ventas', 'visitas', 'otras-aplicaciones'],
+    Ventas:           ['fuerza-ventas', 'visitas', 'otras-aplicaciones'],
   };
 
   const tienePermiso = (modulo) => {

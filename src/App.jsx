@@ -12,6 +12,7 @@ import Agentes from './pages/Agentes';
 import Productos from './pages/Productos';
 import Usuarios from './pages/Usuarios';
 import Visitas from './pages/Visitas';
+import OtrasAplicaciones from './pages/OtrasAplicaciones';
 
 /** Layout autenticado: Sidebar + contenido */
 function LayoutPrincipal() {
@@ -59,7 +60,8 @@ export default function App() {
                 <Route path="/agentes"       element={<RutaProtegida modulo="agentes"       element={<Agentes />} />} />
                 <Route path="/productos"     element={<RutaProtegida modulo="productos"     element={<Productos />} />} />
                 <Route path="/usuarios"      element={<RutaProtegida modulo="usuarios"      element={<Usuarios />} />} />
-                <Route path="/visitas"       element={<Visitas />} />
+                <Route path="/visitas"            element={<Visitas />} />
+                <Route path="/otras-aplicaciones" element={<RutaProtegida modulo="otras-aplicaciones" element={<OtrasAplicaciones />} />} />
               </Route>
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

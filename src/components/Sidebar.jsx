@@ -2,27 +2,29 @@ import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, UserCheck, Package, ShieldCheck,
-  ChevronLeft, ChevronRight, LogOut, MapPin, MoreHorizontal,
+  ChevronLeft, ChevronRight, LogOut, MapPin, MoreHorizontal, AppWindow,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { inicial } from '../utils/formatters';
 
 const MENU = [
-  { path: '/dashboard',      label: 'Dashboard',        icono: LayoutDashboard, modulo: 'dashboard' },
-  { path: '/fuerza-ventas',  label: 'Fuerza de Ventas', icono: Users,           modulo: 'fuerza-ventas' },
-  { path: '/visitas',        label: 'Visitas',           icono: MapPin,          modulo: null },
-  { path: '/agentes',        label: 'Agentes',           icono: UserCheck,       modulo: 'agentes' },
-  { path: '/productos',      label: 'Productos',         icono: Package,         modulo: 'productos' },
-  { path: '/usuarios',       label: 'Usuarios',          icono: ShieldCheck,     modulo: 'usuarios' },
+  { path: '/dashboard',          label: 'Dashboard',           icono: LayoutDashboard, modulo: 'dashboard' },
+  { path: '/fuerza-ventas',      label: 'Fuerza de Ventas',    icono: Users,           modulo: 'fuerza-ventas' },
+  { path: '/visitas',            label: 'Visitas',             icono: MapPin,          modulo: null },
+  { path: '/agentes',            label: 'Agentes',             icono: UserCheck,       modulo: 'agentes' },
+  { path: '/productos',          label: 'Productos',           icono: Package,         modulo: 'productos' },
+  { path: '/usuarios',           label: 'Usuarios',            icono: ShieldCheck,     modulo: 'usuarios' },
+  { path: '/otras-aplicaciones', label: 'Otras Aplicaciones',  icono: AppWindow,       modulo: 'otras-aplicaciones' },
 ];
 
 const BOTTOM_LABELS = {
-  '/dashboard':     'Dashboard',
-  '/fuerza-ventas': 'Fuerza',
-  '/visitas':       'Visitas',
-  '/agentes':       'Agentes',
-  '/productos':     'Productos',
-  '/usuarios':      'Usuarios',
+  '/dashboard':          'Dashboard',
+  '/fuerza-ventas':      'Fuerza',
+  '/visitas':            'Visitas',
+  '/agentes':            'Agentes',
+  '/productos':          'Productos',
+  '/usuarios':           'Usuarios',
+  '/otras-aplicaciones': 'Apps',
 };
 
 /* ─── Tab individual del bottom nav ─────────────────────────── */
