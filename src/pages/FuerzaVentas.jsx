@@ -515,12 +515,21 @@ export default function FuerzaVentas() {
                         />
                         <div className="flex-1 space-y-1.5">
                           {sel.topProductos.map((p, i) => (
-                            <div key={i} className="flex items-center gap-1.5 min-w-0">
-                              <div className="w-2 h-2 rounded-full shrink-0" style={{ background: PALETA[i] }} />
-                              <span className="text-[11px] text-slate-600 truncate flex-1">{p.cve_prod}</span>
-                              <span className="text-[11px] font-bold text-slate-700 shrink-0 tabular-nums">
-                                {p.m3 > 0 ? `${formatoNumero(p.m3,0)} m³` : formatoMoneda(p.ventas)}
-                              </span>
+                            <div key={i} className="flex items-start gap-1.5 min-w-0">
+                              <div className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ background: PALETA[i] }} />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-baseline justify-between gap-1">
+                                  <span className="text-[11px] text-slate-600 truncate">{p.cve_prod}</span>
+                                  <span className="text-[11px] font-bold text-slate-700 shrink-0 tabular-nums">
+                                    {p.m3 > 0 ? `${formatoNumero(p.m3,0)} m³` : formatoMoneda(p.ventas)}
+                                  </span>
+                                </div>
+                                {p.m3 > 0 && (
+                                  <p className="text-[10px] text-slate-400 tabular-nums">
+                                    {formatoMoneda(p.ventas / p.m3)}/m³ prom.
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </div>
