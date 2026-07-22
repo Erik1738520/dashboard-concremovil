@@ -483,7 +483,7 @@ export default function Dashboard() {
             ventasMensuales={ventasMens}
             unidadesMensuales={unidadesMens}
             anioBase={anioPrevio}
-            anioComparacion={anioActual}
+            anioComparacion={anioSel ? Number(anioSel) : anioActual}
           />
           </div>
         </div>

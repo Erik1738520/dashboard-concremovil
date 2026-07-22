@@ -19,15 +19,25 @@ export default function GraficaCrecimiento({
   const fuente = modo === 'dinero' ? ventasMensuales : unidadesMensuales;
 
   const data = NOMBRES_MESES.map((nombre, idx) => {
-    const mes = idx + 1;
-    const base   = fuente?.[anioBase]?.[mes]        || 0;
-    const actual = fuente?.[anioComparacion]?.[mes]  || 0;
-    // Si no hay dato en el año de comparación, mostrar 0%
-    const pct = actual === 0 ? 0 : variacionPct(actual, base);
-    return {
-      mes: nombre.slice(0, 3),
-      pct: pct !== null ? parseFloat(pct.toFixed(1)) : null,
-    };
+    const mes    = idx + 1;
+    const actual = fuente?.[anioComparacion]?.[mes] || 0;
+
+    let anterior, comparaContra;
+    if (mes === 1) {
+      anterior     = fuente?.[anioComparacion - 1]?.[12] || 0;
+      comparaContra = `Dic ${anioComparacion - 1}`;
+    } else {
+      anterior     = fuente?.[anioComparacion]?.[mes - 1] || 0;
+      comparaContra = `${NOMBRES_MESES[mes - 2].slice(0, 3)} ${anioComparacion}`;
+    }
+
+    let pct = 0;
+    if (actual > 0 && anterior > 0) {
+      const v = variacionPct(actual, anterior);
+      pct = v !== null ? parseFloat(v.toFixed(1)) : 0;
+    }
+
+    return { mes: nombre.slice(0, 3), pct, comparaContra };
   });
 
   const CustomDot = ({ cx, cy, payload }) => {
@@ -55,7 +65,7 @@ export default function GraficaCrecimiento({
         <div>
           <h3 className="font-bold text-gray-900">Crecimiento Mensual</h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            {anioComparacion} vs {anioBase} — variación %
+            {anioComparacion} — crecimiento mes a mes
           </p>
         </div>
         <div className="flex rounded-lg overflow-hidden border border-gray-200 text-xs">
@@ -76,7 +86,10 @@ export default function GraficaCrecimiento({
           <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11, fill: '#94A3B8' }}
             axisLine={false} tickLine={false} width={45} />
           <Tooltip
-            formatter={(v) => [`${v !== null ? (v >= 0 ? '+' : '') + v + '%' : '—'}`, modo === 'dinero' ? 'Ventas $' : 'Unidades']}
+            formatter={(v, _name, item) => [
+              `${v !== null ? (v >= 0 ? '+' : '') + v + '%' : '—'}`,
+              `${modo === 'dinero' ? 'Ventas $' : 'Unidades'} vs ${item.payload?.comparaContra ?? 'mes anterior'}`,
+            ]}
             contentStyle={{ borderRadius: '12px', border: '1px solid #E7EBF0', fontSize: 12 }}
           />
           <ReferenceLine y={0} stroke="#CBD5E1" strokeDasharray="4 2" />
