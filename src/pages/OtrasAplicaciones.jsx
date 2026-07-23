@@ -31,7 +31,7 @@ async function cargarAplicaciones() {
     .map(row => Object.fromEntries(
       (row.c || []).map((celda, i) => [cols[i], celda?.v != null ? String(celda.v) : ''])
     ))
-    .filter(a => a['Nombre de aplicacion'] && a['Direccion']);
+    .filter(a => a['Nombre de aplicacion'] && a['Direccion'] && a['ID app'] !== 'App-00001');
 }
 
 function AppCard({ app, index }) {
