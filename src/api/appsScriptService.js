@@ -9,8 +9,9 @@
  *   { success: true/false, mensaje: "..." }
  */
 
-const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL;
-const TOKEN = import.meta.env.VITE_APPS_SCRIPT_TOKEN;
+// trim() también quita el BOM invisible (U+FEFF) que puede colarse al pegar variables en el hosting
+const APPS_SCRIPT_URL = (import.meta.env.VITE_APPS_SCRIPT_URL || '').trim();
+const TOKEN = (import.meta.env.VITE_APPS_SCRIPT_TOKEN || '').trim();
 
 async function llamarAppsScript(accion, parametros = {}) {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'TU_APPS_SCRIPT_URL_AQUI') {

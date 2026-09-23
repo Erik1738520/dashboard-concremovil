@@ -5,8 +5,8 @@
  */
 
 // Respaldo si la variable no está configurada en el hosting (el Sheets es público)
-const SPREADSHEET_ID   = import.meta.env.VITE_SPREADSHEET_ID || '1VJnPOsSU3m-GD5vH0E3ZPl-QosfR7vo5G3uypXrjg0M';
-const APPS_SCRIPT_URL  = import.meta.env.VITE_APPS_SCRIPT_URL;
+const SPREADSHEET_ID   = import.meta.env.VITE_SPREADSHEET_ID?.trim() || '1VJnPOsSU3m-GD5vH0E3ZPl-QosfR7vo5G3uypXrjg0M';
+const APPS_SCRIPT_URL  = (import.meta.env.VITE_APPS_SCRIPT_URL || '').trim();
 
 // Caché en memoria: { [cacheKey]: { data, expiry } }
 const cache = {};
