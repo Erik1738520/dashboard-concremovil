@@ -16,10 +16,10 @@ function fmtShort(v) {
   return `$${v}`;
 }
 
-function fmtKg(v) {
-  if (!v) return '0 KG';
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(2)}M KG`;
-  return `${formatoNumero(v)} KG`;
+function fmtCantidad(v) {
+  if (!v) return '0';
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(2)}M`;
+  return `${formatoNumero(v)}`;
 }
 
 function PctBadge({ pct, color }) {
@@ -75,7 +75,7 @@ function ClienteDetalle({ cliente, onClose }) {
                     <span className="text-sm font-medium text-gray-800 flex-1 truncate">
                       {p.desc_prod || p.cve_prod}
                     </span>
-                    <span className="text-xs text-slate-400 shrink-0">{fmtKg(p.cantidad)}</span>
+                    <span className="text-xs text-slate-400 shrink-0">{fmtCantidad(p.cantidad)}</span>
                     <span className="text-sm font-bold text-gray-900 shrink-0">{fmtShort(p.ventas)}</span>
                     <span className="text-xs font-semibold text-blue-500 shrink-0 w-10 text-right">
                       {pct.toFixed(1)}%
