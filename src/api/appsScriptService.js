@@ -9,9 +9,11 @@
  *   { success: true/false, mensaje: "..." }
  */
 
-// trim() también quita el BOM invisible (U+FEFF) que puede colarse al pegar variables en el hosting
-const APPS_SCRIPT_URL = (import.meta.env.VITE_APPS_SCRIPT_URL || '').trim();
-const TOKEN = (import.meta.env.VITE_APPS_SCRIPT_TOKEN || '').trim();
+// Quita el BOM invisible (U+FEFF) y espacios que pueden colarse al pegar variables en el hosting.
+// Con regex y no trim(): el minificador pliega trim() en constantes y deja el BOM.
+export const limpiarEnv = (v) => String(v || '').replace(/[﻿\s]/g, '');
+const APPS_SCRIPT_URL = limpiarEnv(import.meta.env.VITE_APPS_SCRIPT_URL);
+const TOKEN = limpiarEnv(import.meta.env.VITE_APPS_SCRIPT_TOKEN);
 
 async function llamarAppsScript(accion, parametros = {}) {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'TU_APPS_SCRIPT_URL_AQUI') {

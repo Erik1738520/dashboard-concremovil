@@ -4,9 +4,11 @@
  * Requisito: el Sheets debe estar compartido como "Cualquier persona con el enlace puede ver".
  */
 
+import { limpiarEnv } from './appsScriptService';
+
 // Respaldo si la variable no está configurada en el hosting (el Sheets es público)
-const SPREADSHEET_ID   = import.meta.env.VITE_SPREADSHEET_ID?.trim() || '1VJnPOsSU3m-GD5vH0E3ZPl-QosfR7vo5G3uypXrjg0M';
-const APPS_SCRIPT_URL  = (import.meta.env.VITE_APPS_SCRIPT_URL || '').trim();
+const SPREADSHEET_ID   = limpiarEnv(import.meta.env.VITE_SPREADSHEET_ID) || '1VJnPOsSU3m-GD5vH0E3ZPl-QosfR7vo5G3uypXrjg0M';
+const APPS_SCRIPT_URL  = limpiarEnv(import.meta.env.VITE_APPS_SCRIPT_URL);
 
 // Caché en memoria: { [cacheKey]: { data, expiry } }
 const cache = {};
