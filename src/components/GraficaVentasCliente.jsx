@@ -4,7 +4,7 @@ import {
   ResponsiveContainer, Cell, LabelList,
 } from 'recharts';
 import { Users } from 'lucide-react';
-import { formatoMoneda } from '../utils/formatters';
+import { formatoMoneda, formatoNumero } from '../utils/formatters';
 import ModalClientesDetalle from './ModalClientesDetalle';
 
 const TOP_N = 5;
@@ -77,15 +77,16 @@ export default function GraficaVentasCliente({ clientes }) {
 
       {/* Ranking list */}
       <div className="mt-3 space-y-0">
-        <div className="grid grid-cols-[24px_1fr_auto_auto] gap-x-3 px-1 pb-1 border-b border-gray-100">
+        <div className="grid grid-cols-[24px_1fr_auto_auto_auto] gap-x-3 px-1 pb-1 border-b border-gray-100">
           <span />
           <span className="text-[10px] font-semibold text-slate-400 uppercase">Cliente</span>
+          <span className="text-[10px] font-semibold text-slate-400 uppercase w-20 text-right">Cantidad</span>
           <span className="text-[10px] font-semibold text-slate-400 uppercase">Ventas</span>
           <span className="text-[10px] font-semibold text-slate-400 uppercase w-10 text-right">%</span>
         </div>
         {top.map((c, i) => (
           <div key={c.nombre}
-            className="grid grid-cols-[24px_1fr_auto_auto] gap-x-3 items-center px-1 py-2 border-b border-gray-50 last:border-0">
+            className="grid grid-cols-[24px_1fr_auto_auto_auto] gap-x-3 items-center px-1 py-2 border-b border-gray-50 last:border-0">
             <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0"
               style={{ background: COLORS[i % COLORS.length] }}>
               {i + 1}
@@ -94,6 +95,9 @@ export default function GraficaVentasCliente({ clientes }) {
               <p className="text-sm font-semibold text-gray-800 truncate leading-tight">{c.nombre}</p>
               <p className="text-xs text-slate-400">{c.facturas} facturas</p>
             </div>
+            <span className="text-sm text-slate-600 w-20 text-right tabular-nums">
+              {c.cantidad > 0 ? `${formatoNumero(c.cantidad, 1)} m³` : '—'}
+            </span>
             <span className="text-sm font-bold text-gray-900">{fmtShort(c.ventas)}</span>
             <span className="text-sm text-slate-500 w-10 text-right">{c.pctTotal?.toFixed(1)}%</span>
           </div>

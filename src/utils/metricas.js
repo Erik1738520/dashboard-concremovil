@@ -324,10 +324,11 @@ export function ventasPorCliente(ventas, mapaAgentes = {}) {
     const cli = String(v.nom_fac || '').trim();
     if (!cli) return;
     if (!mapa[cli]) {
-      mapa[cli] = { nombre: cli, ventas: 0, facturas: new Set(), agentes: {}, productos: {} };
+      mapa[cli] = { nombre: cli, ventas: 0, cantidad: 0, facturas: new Set(), agentes: {}, productos: {} };
     }
     const c = mapa[cli];
     c.ventas += Number(v.total_fac) || 0;
+    if (v._contarCantidad !== false) c.cantidad += Number(v.cant_surt) || 0;
     if (v.no_fac) c.facturas.add(v.no_fac);
     const ageKey = String(v.cve_age);
     const agente = mapaAgentes[ageKey];
